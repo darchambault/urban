@@ -1,7 +1,8 @@
 package com.urban.simengine.structures;
+
 import junit.framework.TestCase;
-import java.awt.Point;
-import java.awt.Dimension;
+
+import java.awt.*;
 
 public class BasicStructureTest extends TestCase {
     public void testConstructor() {

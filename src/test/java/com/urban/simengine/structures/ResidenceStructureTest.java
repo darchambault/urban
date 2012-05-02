@@ -1,12 +1,12 @@
 package com.urban.simengine.structures;
 
-import com.urban.simengine.SkillLevel;
 import junit.framework.TestCase;
+
+import com.urban.simengine.SkillLevel;
 import com.urban.simengine.agents.HumanAgent;
-import java.awt.Point;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
+
+import java.awt.*;
+import java.util.*;
 
 public class ResidenceStructureTest extends TestCase {
     public void testConstructorWithoutResidents() {
@@ -19,7 +19,7 @@ public class ResidenceStructureTest extends TestCase {
     public void testConstructorWithResidents() {
         HumanAgent human1 = new HumanAgent(new GregorianCalendar(2000, 12, 25), SkillLevel.BASIC);
         HumanAgent human2 = new HumanAgent(new GregorianCalendar(2001, 12, 26), SkillLevel.EXPERT);
-        ArrayList<HumanAgent> residents = new ArrayList<HumanAgent>();
+        Set<HumanAgent> residents = new HashSet<HumanAgent>();
         residents.add(human1);
         residents.add(human2);
 
@@ -27,7 +27,7 @@ public class ResidenceStructureTest extends TestCase {
 
         assertEquals(2, residence.getMaximumResidents());
         assertEquals(2, residence.getResidents().size());
-        assertTrue(residence.getResidents().indexOf(human1) != -1);
-        assertTrue(residence.getResidents().indexOf(human2) != -1);
+        assertTrue(residence.getResidents().contains(human1));
+        assertTrue(residence.getResidents().contains(human2));
     }
 }

@@ -1,26 +1,26 @@
 package com.urban.simengine.structures;
 
-import com.urban.simengine.WorkPosition;
+import com.urban.simengine.Job;
 
 import java.awt.Point;
 import java.awt.Dimension;
-import java.util.List;
+import java.util.Set;
 
 public class WorkStructure extends BasicStructure {
-    private List<WorkPosition> positions;
+    private Set<Job> jobs;
 
-    public WorkStructure(Point position, Dimension dimension, List<WorkPosition> positions) {
+    public WorkStructure(Point position, Dimension dimension, Set<Job> jobs) {
         super(position, dimension);
-        this.positions = positions;
+        this.jobs = jobs;
     }
 
-    public List<WorkPosition> getPositions() {
-        return this.positions;
+    public Set<Job> getJobs() {
+        return this.jobs;
     }
 
     public boolean isFullyStaffed() {
-        for (WorkPosition position : this.getPositions()) {
-            if (position.getWorker() == null) {
+        for (Job job : this.getJobs()) {
+            if (job.getHuman() == null) {
                 return false;
             }
         }

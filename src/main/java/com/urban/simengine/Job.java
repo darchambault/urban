@@ -1,22 +1,22 @@
 package com.urban.simengine;
 
-import com.urban.simengine.agents.WorkerAgent;
+import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.structures.WorkStructure;
 
-public class WorkPosition {
+public class Job {
     private SkillLevel skillLevel;
     private WorkStructure workStructure;
-    private WorkerAgent worker;
+    private HumanAgent human;
 
-    public WorkPosition(SkillLevel skillLevel, WorkStructure workStructure) {
+    public Job(SkillLevel skillLevel, WorkStructure workStructure) {
         this.skillLevel = skillLevel;
         this.workStructure = workStructure;
     }
 
-    public WorkPosition(SkillLevel skillLevel, WorkStructure workStructure, WorkerAgent worker) {
+    public Job(SkillLevel skillLevel, WorkStructure workStructure, HumanAgent human) {
         this.skillLevel = skillLevel;
         this.workStructure = workStructure;
-        this.worker = worker;
+        this.human = human;
     }
 
     public SkillLevel getSkillLevel() {
@@ -27,12 +27,12 @@ public class WorkPosition {
         return this.workStructure;
     }
 
-    public WorkerAgent getWorker() {
-        return this.worker;
+    public HumanAgent getHuman() {
+        return this.human;
     }
 
-    public WorkPosition setWorker(WorkerAgent worker) {
-        this.worker = worker;
+    public Job setHuman(HumanAgent human) {
+        this.human = human;
         return this;
     }
 }
