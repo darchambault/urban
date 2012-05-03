@@ -58,7 +58,5 @@ abstract public class ModelAbstract implements Model {
         populationManager.processTick(this);
     }
 
-    public boolean isComplete() {
-        return false;
-    }
+    abstract public boolean isComplete();
 }

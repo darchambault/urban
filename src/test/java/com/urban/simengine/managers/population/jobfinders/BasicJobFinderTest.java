@@ -120,4 +120,31 @@ public class BasicJobFinderTest {
 
         control.verify();
     }
+
+    @Test public void testDoesNotTryToFindJobToEmployedHuman() {
+        IMocksControl control = createControl();
+
+        List<HumanAgent> unemployedHumans = new ArrayList<HumanAgent>();
+        HumanAgent human1 = control.createMock(HumanAgent.class);
+        unemployedHumans.add(human1);
+
+        List<Job> unfilledJobs = new ArrayList<Job>();
+        Job job1 = control.createMock(Job.class);
+        unfilledJobs.add(job1);
+
+        Job job2 = control.createMock(Job.class);
+
+        expect(job1.getSkillLevel()).andReturn(SkillLevel.BASIC).anyTimes();
+        expect(job1.getHuman()).andReturn(null).anyTimes();
+
+        expect(human1.getJob()).andReturn(job2).atLeastOnce();
+        expect(human1.getSkillLevel()).andReturn(SkillLevel.INTERMEDIATE).anyTimes();
+
+        control.replay();
+
+        JobFinder jobFinder = new BasicJobFinder();
+        jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+
+        control.verify();
+    }
 }
