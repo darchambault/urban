@@ -1,14 +1,14 @@
 package com.urban.simengine.models;
 
-import com.urban.simengine.PopulationManager;
-import com.urban.simengine.TimeManager;
+import com.urban.simengine.managers.population.PopulationManager;
+import com.urban.simengine.managers.time.TimeManager;
 import com.urban.simengine.structures.ResidenceStructure;
 import com.urban.simengine.structures.WorkStructure;
 
 import java.util.GregorianCalendar;
 import java.util.Set;
 
-public class TimeLimitModel extends AbstractModel {
+public class TimeLimitModel extends ModelAbstract {
     protected GregorianCalendar endDate;
 
     public TimeLimitModel(TimeManager timeManager, GregorianCalendar endDate, PopulationManager populationManager, Set<ResidenceStructure> residences, Set<WorkStructure> workplaces) {

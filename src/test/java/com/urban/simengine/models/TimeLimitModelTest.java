@@ -1,73 +1,165 @@
 package com.urban.simengine.models;
 
-import com.urban.simengine.Job;
-import com.urban.simengine.PopulationManager;
-import com.urban.simengine.SkillLevel;
-import com.urban.simengine.TimeManager;
-import com.urban.simengine.agents.HumanAgent;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
+import org.easymock.IMocksControl;
+
+import com.urban.simengine.managers.time.TimeManager;
+import com.urban.simengine.managers.population.PopulationManager;
 import com.urban.simengine.structures.ResidenceStructure;
 import com.urban.simengine.structures.WorkStructure;
-import junit.framework.TestCase;
+import com.urban.simengine.Job;
+import com.urban.simengine.agents.HumanAgent;
 
-import java.awt.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public class TimeLimitModelTest extends TestCase {
-    public void testConstructor() {
-        GregorianCalendar startDate = new GregorianCalendar(1950, 1, 1);
-        GregorianCalendar endDate = new GregorianCalendar(1950, 1, 7);
+public class TimeLimitModelTest  {
+    @Test public void testConstructor() {
+        IMocksControl control = createControl();
 
-        Set<HumanAgent> humans = new HashSet<HumanAgent>();
-        humans.add(new HumanAgent((GregorianCalendar) startDate.clone(), SkillLevel.BASIC));
-        humans.add(new HumanAgent((GregorianCalendar) startDate.clone(), SkillLevel.BASIC));
-        humans.add(new HumanAgent((GregorianCalendar) startDate.clone(), SkillLevel.BASIC));
+        GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
 
         Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
-        residences.add(new ResidenceStructure(new Point(1, 1), new Dimension(2, 2), 2));
-        residences.add(new ResidenceStructure(new Point(3, 1), new Dimension(2, 2), 3));
+        ResidenceStructure residenceMock1 = control.createMock(ResidenceStructure.class);
+        residences.add(residenceMock1);
+        ResidenceStructure residenceMock2 = control.createMock(ResidenceStructure.class);
+        residences.add(residenceMock2);
 
         Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
+        WorkStructure workplaceMock1 = control.createMock(WorkStructure.class);
+        workplaces.add(workplaceMock1);
+        WorkStructure workplaceMock2 = control.createMock(WorkStructure.class);
+        workplaces.add(workplaceMock2);
 
-        Set<Job> jobs1 = new HashSet<Job>();
-        WorkStructure workplace1 = new WorkStructure(new Point(5, 1), new Dimension(2, 2), jobs1);
-        jobs1.add(new Job(SkillLevel.BASIC, workplace1));
-        workplaces.add(workplace1);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
+        TimeManager timeManagerMock = control.createMock(TimeManager.class);
 
-        Set<Job> jobs2 = new HashSet<Job>();
-        WorkStructure workplace2 = new WorkStructure(new Point(5, 1), new Dimension(2, 2), jobs2);
-        jobs2.add(new Job(SkillLevel.EXPERT, workplace2));
-        jobs2.add(new Job(SkillLevel.BASIC, workplace2));
-        workplaces.add(workplace2);
+        control.replay();
 
-        PopulationManager populationManager = new PopulationManager(humans);
-        TimeManager timeManager = new TimeManager(startDate, Calendar.DAY_OF_MONTH, 1);
+        TimeLimitModel model = new TimeLimitModel(timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
 
-        TimeLimitModel model = new TimeLimitModel(timeManager, endDate, populationManager, residences, workplaces);
+        assertSame(populationManagerMock, model.getPopulationManager());
+        assertSame(endDateMock, model.getEndDate());
+        assertSame(timeManagerMock, model.getTimeManager());
+        assertTrue(model.getResidences().contains(residenceMock1));
+        assertTrue(model.getResidences().contains(residenceMock2));
+        assertTrue(model.getWorkplaces().contains(workplaceMock1));
+        assertTrue(model.getWorkplaces().contains(workplaceMock2));
 
-        assertEquals(startDate, model.getTimeManager().getStartDate());
-        assertEquals(startDate, model.getTimeManager().getCurrentDate());
-        assertEquals(endDate, model.getEndDate());
-        assertEquals(humans, model.getPopulationManager().getAllHumans());
+        control.verify();
     }
 
-    public void testIsComplete() {
-        GregorianCalendar startDate = new GregorianCalendar(1950, 1, 1);
-        GregorianCalendar endDate = new GregorianCalendar(1950, 1, 2);
+    @Test public void testGetUnfilledJobs() {
+        IMocksControl control = createControl();
 
-        Set<HumanAgent> humans = new HashSet<HumanAgent>();
+        GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
+        TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
+
+        Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
+        WorkStructure workplaceMock1 = control.createMock(WorkStructure.class);
+        workplaces.add(workplaceMock1);
+        WorkStructure workplaceMock2 = control.createMock(WorkStructure.class);
+        workplaces.add(workplaceMock2);
+
+        Set<Job> workplace1Jobs = new HashSet<Job>();
+        Set<Job> workplace2Jobs = new HashSet<Job>();
+
+        Job jobMock1 = control.createMock(Job.class);
+        workplace1Jobs.add(jobMock1);
+        Job jobMock2 = control.createMock(Job.class);
+        workplace1Jobs.add(jobMock2);
+        Job jobMock3 = control.createMock(Job.class);
+        workplace2Jobs.add(jobMock3);
+
+        expect(workplaceMock1.getJobs()).andReturn(workplace1Jobs).atLeastOnce();
+        expect(jobMock1.getHuman()).andReturn(control.createMock(HumanAgent.class)).atLeastOnce();
+        expect(jobMock2.getHuman()).andReturn(null).atLeastOnce();
+        expect(workplaceMock2.getJobs()).andReturn(workplace2Jobs).atLeastOnce();
+        expect(jobMock3.getHuman()).andReturn(null).atLeastOnce();
+
+        control.replay();
+
+        TimeLimitModel model = new TimeLimitModel(timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+        Set<Job> unfilledJobs = model.getUnfilledJobs();
+
+        assertEquals(2, unfilledJobs.size());
+        assertTrue(unfilledJobs.contains(jobMock2));
+        assertTrue(unfilledJobs.contains(jobMock3));
+
+        control.verify();
+    }
+
+    @Test public void testProcessTick() {
+        IMocksControl control = createControl();
+
+        GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
+
         Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
         Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
 
-        PopulationManager populationManager = new PopulationManager(humans);
-        TimeManager timeManager = new TimeManager(startDate, Calendar.DAY_OF_MONTH, 1);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
 
-        AbstractModel model = new TimeLimitModel(timeManager, endDate, populationManager, residences, workplaces);
+        TimeManager timeManagerMock = control.createMock(TimeManager.class);
 
+        TimeLimitModel model = new TimeLimitModel(timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+
+        populationManagerMock.processTick(model);
+        expectLastCall().once();
+
+        control.replay();
+
+        model.processTick();
+
+        control.verify();
+    }
+
+    @Test public void testIsCompleteFalse() {
+        IMocksControl control = createControl();
+
+        GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
+
+        Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
+        Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
+
+        PopulationManager populationManagerMock = createMock(PopulationManager.class);
+
+        GregorianCalendar firstDateMock = control.createMock(GregorianCalendar.class);
+        expect(firstDateMock.compareTo(endDateMock)).andReturn(-1).once();
+        TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        expect(timeManagerMock.getCurrentDate()).andReturn(firstDateMock).once();
+
+        control.replay();
+
+        TimeLimitModel model = new TimeLimitModel(timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
         assertFalse(model.isComplete());
-        model.tick();
+
+        control.verify();
+    }
+
+
+    @Test public void testIsCompleteTrue() {
+        IMocksControl control = createControl();
+
+        GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
+
+        Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
+        Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
+
+        PopulationManager populationManagerMock = createMock(PopulationManager.class);
+
+        GregorianCalendar firstDateMock = control.createMock(GregorianCalendar.class);
+        expect(firstDateMock.compareTo(endDateMock)).andReturn(0).once();
+        TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        expect(timeManagerMock.getCurrentDate()).andReturn(firstDateMock).once();
+
+        control.replay();
+
+        TimeLimitModel model = new TimeLimitModel(timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
         assertTrue(model.isComplete());
+
+        control.verify();
     }
 }

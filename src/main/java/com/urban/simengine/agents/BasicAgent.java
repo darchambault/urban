@@ -1,4 +1,4 @@
 package com.urban.simengine.agents;
 
-public class BasicAgent {
+public interface BasicAgent {
 }

@@ -1,14 +1,14 @@
-package com.urban.simengine;
+package com.urban.simengine.managers.time;
 
 import java.util.GregorianCalendar;
 
-public class TimeManager {
+public class TimeManagerImpl implements TimeManager {
     private GregorianCalendar startDate;
     private int tickLengthUnit;
     private int tickLength;
     private GregorianCalendar currentDate;
 
-    public TimeManager(GregorianCalendar startDate, int tickLengthUnit, int tickLength) {
+    public TimeManagerImpl(GregorianCalendar startDate, int tickLengthUnit, int tickLength) {
         this.startDate = startDate;
         this.tickLengthUnit = tickLengthUnit;
         this.tickLength = tickLength;
