@@ -8,6 +8,10 @@
     <artifactId>urban</artifactId>
     <version>1.0</version>
 
+    <properties>
+        <powermock.version>1.4.12</powermock.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -35,7 +39,8 @@
                     </formats>
                     <instrumentation>
                         <excludes>
-                            <exclude>com/urban/Application.class</exclude>
+                            <exclude>com/urban/app/loaders/ScenarioALoader.class</exclude>
+                            <exclude>com/urban/app/Application.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
@@ -54,6 +59,11 @@
     </reporting>
 
     <dependencies>
+        <dependency>
+            <groupId>com.baulsupp.kolja</groupId>
+            <artifactId>jcurses</artifactId>
+            <version>0.9.5.3</version>
+        </dependency>
         <!--
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -71,6 +81,18 @@
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <version>3.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4-legacy</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,4 +1,4 @@
-package com.urban;
+package com.urban.app.loaders;
 
 import com.urban.simengine.Job;
 import com.urban.simengine.JobImpl;
@@ -20,20 +20,13 @@ import com.urban.simengine.structures.WorkStructureImpl;
 
 import java.awt.Point;
 import java.awt.Dimension;
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Application {
-    public static void main(String [] args) {
-        Application.runScenarioA();
-    }
-
-    private static void runScenarioA() {
-        System.out.println("Configuring scenario A ...");
-
+public class ScenarioALoader implements Loader {
+    public Model getModel() {
         GregorianCalendar startDate = new GregorianCalendar(1950, 1, 1);
         GregorianCalendar endDate = new GregorianCalendar(1950, 1, 7);
 
@@ -66,17 +59,6 @@ public class Application {
 
         Model model = new TimeLimitModel(timeManager, endDate, populationManager, residences, workplaces);
 
-        Application.runModel(model);
-    }
-
-    private static void runModel(Model model) {
-        System.out.println("Starting model!");
-
-        while (!model.isComplete()) {
-            DateFormat dateFormat = DateFormat.getDateInstance();
-            System.out.println(dateFormat.format(model.getTimeManager().getCurrentDate().getTime()));
-            model.processTick();
-            model.getTimeManager().tick();
-        }
+        return model;
     }
 }
