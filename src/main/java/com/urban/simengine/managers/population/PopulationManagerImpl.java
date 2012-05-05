@@ -1,6 +1,8 @@
 package com.urban.simengine.managers.population;
 
+import com.google.common.eventbus.EventBus;
 import com.urban.simengine.agents.HumanAgent;
+import com.urban.simengine.managers.population.events.JobFoundEventImpl;
 import com.urban.simengine.managers.population.jobfinders.JobFinder;
 import com.urban.simengine.models.Model;
 
@@ -9,17 +11,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PopulationManagerImpl implements PopulationManager {
-    private Set<HumanAgent> humans;
     private JobFinder jobFinder;
+    private EventBus eventBus;
+    private Set<HumanAgent> humans;
 
-    public PopulationManagerImpl(JobFinder jobFinder) {
-        this.humans = new HashSet<HumanAgent>();
+    public PopulationManagerImpl(JobFinder jobFinder, EventBus eventBus) {
         this.jobFinder = jobFinder;
+        this.eventBus = eventBus;
+        this.humans = new HashSet<HumanAgent>();
     }
 
-    public PopulationManagerImpl(JobFinder jobFinder, Set<HumanAgent> humans) {
-        this.humans = humans;
+    public PopulationManagerImpl(JobFinder jobFinder, EventBus eventBus, Set<HumanAgent> humans) {
         this.jobFinder = jobFinder;
+        this.eventBus = eventBus;
+        this.humans = humans;
     }
 
     public JobFinder getJobFinder() {
@@ -57,6 +62,9 @@ public class PopulationManagerImpl implements PopulationManager {
 
 
     public void processTick(Model model) {
-        this.getJobFinder().findJobs(this.getUnemployedHumans(), model.getUnfilledJobs());
+        Set<HumanAgent> humansWhoFoundJobs = this.getJobFinder().findJobs(this.getUnemployedHumans(), model.getUnfilledJobs());
+        for (HumanAgent human : humansWhoFoundJobs) {
+            this.eventBus.post(new JobFoundEventImpl(human));
+        }
     }
 }

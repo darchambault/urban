@@ -1,6 +1,7 @@
 package com.urban.simengine.managers.population.jobfinders;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import org.easymock.IMocksControl;
 
@@ -11,6 +12,7 @@ import com.urban.simengine.SkillLevel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BasicJobFinderTest {
     @Test public void testFindJobOfEqualSkillLevel() {
@@ -36,7 +38,10 @@ public class BasicJobFinderTest {
         control.replay();
 
         JobFinder jobFinder = new BasicJobFinder();
-        jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+        Set<HumanAgent> humansWithNewJobs = jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+
+        assertEquals(1, humansWithNewJobs.size());
+        assertTrue(humansWithNewJobs.contains(human));
 
         control.verify();
     }
@@ -64,7 +69,10 @@ public class BasicJobFinderTest {
         control.replay();
 
         JobFinder jobFinder = new BasicJobFinder();
-        jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+        Set<HumanAgent> humansWithNewJobs = jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+
+        assertEquals(1, humansWithNewJobs.size());
+        assertTrue(humansWithNewJobs.contains(human));
 
         control.verify();
     }
@@ -89,7 +97,9 @@ public class BasicJobFinderTest {
         control.replay();
 
         JobFinder jobFinder = new BasicJobFinder();
-        jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+        Set<HumanAgent> humansWithNewJobs = jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+
+        assertEquals(0, humansWithNewJobs.size());
 
         control.verify();
     }
@@ -116,7 +126,9 @@ public class BasicJobFinderTest {
         control.replay();
 
         JobFinder jobFinder = new BasicJobFinder();
-        jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+        Set<HumanAgent> humansWithNewJobs = jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+
+        assertEquals(0, humansWithNewJobs.size());
 
         control.verify();
     }
@@ -143,7 +155,9 @@ public class BasicJobFinderTest {
         control.replay();
 
         JobFinder jobFinder = new BasicJobFinder();
-        jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+        Set<HumanAgent> humansWithNewJobs = jobFinder.findJobs(new HashSet<HumanAgent>(unemployedHumans), new HashSet<Job>(unfilledJobs));
+
+        assertEquals(0, humansWithNewJobs.size());
 
         control.verify();
     }

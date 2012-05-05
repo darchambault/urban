@@ -8,13 +8,16 @@ import static org.easymock.EasyMock.*;
 
 import com.urban.app.loaders.Loader;
 
+import java.util.GregorianCalendar;
+
 public class ModelRunnerTest {
     @Test public void testRun() {
-        IMocksControl control = createStrictControl();
+        IMocksControl control = createControl();
 
         Loader loaderMock = control.createMock(Loader.class);
         Model modelMock = control.createMock(Model.class);
         TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        GregorianCalendar newDateMock = control.createMock(GregorianCalendar.class);
 
         expect(loaderMock.getModel()).andReturn(modelMock).once();
 
@@ -25,8 +28,7 @@ public class ModelRunnerTest {
 
         expect(modelMock.getTimeManager()).andReturn(timeManagerMock).once();
 
-        timeManagerMock.tick();
-        expectLastCall().once();
+        expect(timeManagerMock.tick()).andReturn(newDateMock).once();
 
         expect(modelMock.isComplete()).andReturn(true).once();
 

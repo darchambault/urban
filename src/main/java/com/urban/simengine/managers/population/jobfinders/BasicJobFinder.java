@@ -3,15 +3,21 @@ package com.urban.simengine.managers.population.jobfinders;
 import com.urban.simengine.Job;
 import com.urban.simengine.agents.HumanAgent;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class BasicJobFinder implements JobFinder {
-    public void findJobs(Set<HumanAgent> unemployedHumans, Set<Job> unfilledJobs) {
+    public Set<HumanAgent> findJobs(Set<HumanAgent> unemployedHumans, Set<Job> unfilledJobs) {
+        Set<HumanAgent> humansWithFoundJobs = new HashSet<HumanAgent>();
         for (HumanAgent human : unemployedHumans) {
             if (human.getJob() == null) {
-                this.findJob(human, unfilledJobs);
+                Job newJob = this.findJob(human, unfilledJobs);
+                if (newJob != null) {
+                    humansWithFoundJobs.add(human);
+                }
             }
         }
+        return humansWithFoundJobs;
     }
 
     private Job findJob(HumanAgent human, Set<Job> jobs) {

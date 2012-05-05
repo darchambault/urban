@@ -1,5 +1,6 @@
 package com.urban.app.loaders;
 
+import com.google.common.eventbus.EventBus;
 import com.urban.simengine.Job;
 import com.urban.simengine.JobImpl;
 import com.urban.simengine.SkillLevel;
@@ -53,12 +54,11 @@ public class ScenarioALoader implements Loader {
         workplaces.add(workplace2);
 
         JobFinder jobFinder = new BasicJobFinder();
+        EventBus eventBusMock = new EventBus();
 
-        PopulationManager populationManager = new PopulationManagerImpl(jobFinder, humans);
+        PopulationManager populationManager = new PopulationManagerImpl(jobFinder, eventBusMock, humans);
         TimeManager timeManager = new TimeManagerImpl(startDate, Calendar.DAY_OF_MONTH, 1);
 
-        Model model = new TimeLimitModel(timeManager, endDate, populationManager, residences, workplaces);
-
-        return model;
+        return new TimeLimitModel(timeManager, endDate, populationManager, residences, workplaces);
     }
 }
