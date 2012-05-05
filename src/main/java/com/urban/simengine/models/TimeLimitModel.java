@@ -1,5 +1,6 @@
 package com.urban.simengine.models;
 
+import com.google.common.eventbus.EventBus;
 import com.urban.simengine.managers.population.PopulationManager;
 import com.urban.simengine.managers.time.TimeManager;
 import com.urban.simengine.structures.ResidenceStructure;
@@ -11,8 +12,8 @@ import java.util.Set;
 public class TimeLimitModel extends ModelAbstract {
     protected GregorianCalendar endDate;
 
-    public TimeLimitModel(TimeManager timeManager, GregorianCalendar endDate, PopulationManager populationManager, Set<ResidenceStructure> residences, Set<WorkStructure> workplaces) {
-        super(timeManager, populationManager, residences, workplaces);
+    public TimeLimitModel(EventBus eventBus, TimeManager timeManager, GregorianCalendar endDate, PopulationManager populationManager, Set<ResidenceStructure> residences, Set<WorkStructure> workplaces) {
+        super(eventBus, timeManager, populationManager, residences, workplaces);
         this.endDate = endDate;
     }
 

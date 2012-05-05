@@ -41,6 +41,7 @@
                         <excludes>
                             <exclude>com/urban/app/loaders/ScenarioALoader.class</exclude>
                             <exclude>com/urban/app/Application.class</exclude>
+                            <exclude>com/urban/app/renderers/**</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

@@ -1,12 +1,9 @@
-package com.urban.app;
+package com.urban.simengine;
 
-import com.urban.app.loaders.Loader;
 import com.urban.simengine.models.Model;
 
 public class ModelRunner {
-    static public void run(Loader loader) {
-        Model model = loader.getModel();
-
+    static public void run(Model model) {
         while (!model.isComplete()) {
             model.processTick();
             model.getTimeManager().tick();

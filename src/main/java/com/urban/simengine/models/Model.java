@@ -1,5 +1,6 @@
 package com.urban.simengine.models;
 
+import com.google.common.eventbus.EventBus;
 import com.urban.simengine.Job;
 import com.urban.simengine.managers.time.TimeManager;
 import com.urban.simengine.structures.ResidenceStructure;
@@ -8,6 +9,8 @@ import com.urban.simengine.structures.WorkStructure;
 import java.util.Set;
 
 public interface Model {
+    public EventBus getEventBus();
+
     public TimeManager getTimeManager();
 
     public Set<ResidenceStructure> getResidences();

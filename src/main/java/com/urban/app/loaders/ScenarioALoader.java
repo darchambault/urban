@@ -28,6 +28,8 @@ import java.util.Set;
 
 public class ScenarioALoader implements Loader {
     public Model getModel() {
+        EventBus eventBus = new EventBus();
+
         GregorianCalendar startDate = new GregorianCalendar(1950, 1, 1);
         GregorianCalendar endDate = new GregorianCalendar(1950, 1, 7);
 
@@ -54,11 +56,10 @@ public class ScenarioALoader implements Loader {
         workplaces.add(workplace2);
 
         JobFinder jobFinder = new BasicJobFinder();
-        EventBus eventBusMock = new EventBus();
 
-        PopulationManager populationManager = new PopulationManagerImpl(jobFinder, eventBusMock, humans);
+        PopulationManager populationManager = new PopulationManagerImpl(jobFinder, eventBus, humans);
         TimeManager timeManager = new TimeManagerImpl(startDate, Calendar.DAY_OF_MONTH, 1);
 
-        return new TimeLimitModel(timeManager, endDate, populationManager, residences, workplaces);
+        return new TimeLimitModel(eventBus, timeManager, endDate, populationManager, residences, workplaces);
     }
 }
