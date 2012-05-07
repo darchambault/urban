@@ -57,8 +57,12 @@ public class ScenarioALoader implements Loader {
 
         JobFinder jobFinder = new BasicJobFinder();
 
-        PopulationManager populationManager = new PopulationManagerImpl(jobFinder, eventBus, humans);
-        TimeManager timeManager = new TimeManagerImpl(startDate, Calendar.DAY_OF_MONTH, 1, eventBus);
+        PopulationManager populationManager = new PopulationManagerImpl(jobFinder, eventBus);
+        for (HumanAgent human : humans) {
+            populationManager.addHuman(human);
+        }
+
+        TimeManager timeManager = new TimeManagerImpl(startDate, Calendar.YEAR, 1, eventBus);
 
         return new TimeLimitModel(eventBus, timeManager, endDate, populationManager, residences, workplaces);
     }

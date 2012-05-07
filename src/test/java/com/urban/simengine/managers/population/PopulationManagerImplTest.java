@@ -25,32 +25,7 @@ public class PopulationManagerImplTest {
 
         PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
 
-        assertSame(jobFinderMock, manager.getJobFinder());
         assertEquals(0, manager.getHumans().size());
-
-        control.verify();
-    }
-
-    @Test public void testConstructorWithHumans() {
-        IMocksControl control = createControl();
-
-        JobFinder jobFinderMock = control.createMock(JobFinder.class);
-        EventBus eventBusMock = control.createMock(EventBus.class);
-
-        Set<HumanAgent> humans = new HashSet<HumanAgent>();
-        HumanAgent humanMock1 = control.createMock(HumanAgent.class);
-        HumanAgent humanMock2 = control.createMock(HumanAgent.class);
-        humans.add(humanMock1);
-        humans.add(humanMock2);
-
-        control.replay();
-
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock, humans);
-
-        assertSame(jobFinderMock, manager.getJobFinder());
-        assertEquals(2, manager.getHumans().size());
-        assertTrue(manager.getHumans().contains(humanMock1));
-        assertTrue(manager.getHumans().contains(humanMock2));
 
         control.verify();
     }
@@ -83,7 +58,11 @@ public class PopulationManagerImplTest {
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock, new HashSet<HumanAgent>(humans));
+        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        for (HumanAgent human : humans) {
+            manager.addHuman(human);
+        }
+
         Set<HumanAgent> unemployedHumans = manager.getUnemployedHumans();
 
         assertEquals(2, unemployedHumans.size());
@@ -103,7 +82,11 @@ public class PopulationManagerImplTest {
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock, new HashSet<HumanAgent>(humans));
+        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        for (HumanAgent human : humans) {
+            manager.addHuman(human);
+        }
+
         Set<HumanAgent> employedHumans = manager.getEmployedHumans();
 
         assertEquals(2, employedHumans.size());
@@ -124,7 +107,6 @@ public class PopulationManagerImplTest {
         Model modelMock = control.createMock(Model.class);
 
         Set<Job> jobsSet = new HashSet<Job>(jobs);
-        Set<HumanAgent> humansSet = new HashSet<HumanAgent>(humans);
 
         Set<HumanAgent> unemployedHumans = new HashSet<HumanAgent>();
         unemployedHumans.add(humans.get(2));
@@ -139,7 +121,7 @@ public class PopulationManagerImplTest {
         expectLastCall().times(2);
 
         PopulationManager manager = createMockBuilder(PopulationManagerImpl.class)
-                .withConstructor(jobFinderMock, eventBusMock, humansSet)
+                .withConstructor(jobFinderMock, eventBusMock)
                 .addMockedMethod("getUnemployedHumans")
                 .createMock();
 

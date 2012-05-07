@@ -9,8 +9,6 @@ import java.util.Set;
 public interface PopulationManager {
     public PopulationManager addHuman(HumanAgent human);
 
-    public JobFinder getJobFinder();
-
     public Set<HumanAgent> getHumans();
 
     public Set<HumanAgent> getUnemployedHumans();

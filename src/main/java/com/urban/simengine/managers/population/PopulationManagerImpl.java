@@ -21,16 +21,6 @@ public class PopulationManagerImpl implements PopulationManager {
         this.humans = new HashSet<HumanAgent>();
     }
 
-    public PopulationManagerImpl(JobFinder jobFinder, EventBus eventBus, Set<HumanAgent> humans) {
-        this.jobFinder = jobFinder;
-        this.eventBus = eventBus;
-        this.humans = humans;
-    }
-
-    public JobFinder getJobFinder() {
-        return this.jobFinder;
-    }
-
     public Set<HumanAgent> getHumans() {
         return this.humans;
     }
@@ -62,7 +52,7 @@ public class PopulationManagerImpl implements PopulationManager {
 
 
     public void processTick(Model model) {
-        Set<HumanAgent> humansWhoFoundJobs = this.getJobFinder().findJobs(this.getUnemployedHumans(), model.getUnfilledJobs());
+        Set<HumanAgent> humansWhoFoundJobs = this.jobFinder.findJobs(this.getUnemployedHumans(), model.getUnfilledJobs());
         for (HumanAgent human : humansWhoFoundJobs) {
             this.eventBus.post(new JobFoundEventImpl(human));
         }

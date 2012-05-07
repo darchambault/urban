@@ -30,7 +30,8 @@ public class ModelRunnerTest {
 
         control.replay();
 
-        ModelRunner.run(modelMock);
+        ModelRunner modelRunner = new ModelRunner(modelMock);
+        modelRunner.run();
 
         control.verify();
     }

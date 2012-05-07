@@ -13,6 +13,7 @@ public class Application {
         Model model = loader.getModel();
         Renderer renderer = new ConsoleLogRenderer(model);
         renderer.start();
-        ModelRunner.run(model);
+        ModelRunner modelRunner = new ModelRunner(model);
+        modelRunner.run();
     }
 }
