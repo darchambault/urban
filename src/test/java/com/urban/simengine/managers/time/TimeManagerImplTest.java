@@ -1,5 +1,8 @@
 package com.urban.simengine.managers.time;
 
+import com.google.common.eventbus.EventBus;
+import com.urban.simengine.managers.time.events.TimeTickEvent;
+import org.easymock.IMocksControl;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
@@ -12,13 +15,17 @@ public class TimeManagerImplTest  {
         int tickLengthUnit = Calendar.DAY_OF_MONTH;
         int tickLength = 1;
 
-        GregorianCalendar startDateMock = createMock(GregorianCalendar.class);
-        GregorianCalendar startDateCloneMock = createMock(GregorianCalendar.class);
+        IMocksControl control = createControl();
+
+        GregorianCalendar startDateMock = control.createMock(GregorianCalendar.class);
+        GregorianCalendar startDateCloneMock = control.createMock(GregorianCalendar.class);
         expect(startDateMock.clone()).andReturn(startDateCloneMock).once();
 
-        replay(startDateMock, startDateCloneMock);
+        EventBus eventBusMock = control.createMock(EventBus.class);
 
-        TimeManagerImpl manager = new TimeManagerImpl(startDateMock, tickLengthUnit, tickLength);
+        control.replay();
+
+        TimeManagerImpl manager = new TimeManagerImpl(startDateMock, tickLengthUnit, tickLength, eventBusMock);
 
         assertSame(startDateMock, manager.getStartDate());
         assertEquals(tickLengthUnit, manager.getTickLengthUnit());
@@ -26,23 +33,31 @@ public class TimeManagerImplTest  {
         assertNotSame(startDateMock, manager.getCurrentDate());
         assertSame(startDateCloneMock, manager.getCurrentDate());
 
-        verify(startDateMock, startDateCloneMock);
+        control.verify();
     }
 
     @Test public void testTick() {
-        GregorianCalendar startDateMock = createMock(GregorianCalendar.class);
-        GregorianCalendar startDateCloneMock = createMock(GregorianCalendar.class);
+        IMocksControl control = createControl();
+
+        GregorianCalendar startDateMock = control.createMock(GregorianCalendar.class);
+        GregorianCalendar startDateCloneMock = control.createMock(GregorianCalendar.class);
         expect(startDateMock.clone()).andReturn(startDateCloneMock).once();
+        GregorianCalendar currentDateCloneMock = control.createMock(GregorianCalendar.class);
+        expect(startDateCloneMock.clone()).andReturn(currentDateCloneMock).once();
 
-        startDateCloneMock.add(5, 1);
+        startDateCloneMock.add(Calendar.DAY_OF_MONTH, 1);
 
-        replay(startDateMock, startDateCloneMock);
+        EventBus eventBusMock = control.createMock(EventBus.class);
+        eventBusMock.post(anyObject(TimeTickEvent.class));
+        expectLastCall().once();
 
-        TimeManagerImpl manager = new TimeManagerImpl(startDateMock, Calendar.DAY_OF_MONTH, 1);
+        control.replay();
+
+        TimeManagerImpl manager = new TimeManagerImpl(startDateMock, Calendar.DAY_OF_MONTH, 1, eventBusMock);
         GregorianCalendar newDate = manager.tick();
 
         assertEquals(startDateCloneMock, newDate);
 
-        verify(startDateMock, startDateCloneMock);
+        control.verify();
     }
 }
