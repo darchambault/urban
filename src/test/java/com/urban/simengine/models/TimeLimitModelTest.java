@@ -1,6 +1,7 @@
 package com.urban.simengine.models;
 
 import com.google.common.eventbus.EventBus;
+import com.urban.simengine.managers.family.FamilyManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
@@ -35,17 +36,19 @@ public class TimeLimitModelTest  {
         WorkStructure workplaceMock2 = control.createMock(WorkStructure.class);
         workplaces.add(workplaceMock2);
 
-        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
         TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
+        FamilyManager familyManagerMock = control.createMock(FamilyManager.class);
 
         control.replay();
 
-        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
 
         assertSame(eventBusMock, model.getEventBus());
-        assertSame(populationManagerMock, model.getPopulationManager());
-        assertSame(endDateMock, model.getEndDate());
         assertSame(timeManagerMock, model.getTimeManager());
+        assertSame(endDateMock, model.getEndDate());
+        assertSame(populationManagerMock, model.getPopulationManager());
+        assertSame(familyManagerMock, model.getFamilyManager());
         assertTrue(model.getResidences().contains(residenceMock1));
         assertTrue(model.getResidences().contains(residenceMock2));
         assertTrue(model.getWorkplaces().contains(workplaceMock1));
@@ -59,8 +62,9 @@ public class TimeLimitModelTest  {
 
         EventBus eventBusMock = control.createMock(EventBus.class);
         GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
-        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
         TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
+        FamilyManager familyManagerMock = control.createMock(FamilyManager.class);
         Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
 
         Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
@@ -87,7 +91,7 @@ public class TimeLimitModelTest  {
 
         control.replay();
 
-        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
         Set<Job> unfilledJobs = model.getUnfilledJobs();
 
         assertEquals(2, unfilledJobs.size());
@@ -106,13 +110,21 @@ public class TimeLimitModelTest  {
         Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
         Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
 
-        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
-
         TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
+        FamilyManager familyManagerMock = control.createMock(FamilyManager.class);
+        Calendar currentDateMock = control.createMock(Calendar.class);
 
-        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+        expect(timeManagerMock.getCurrentDate()).andReturn(currentDateMock).anyTimes();
 
-        populationManagerMock.processTick(model);
+        Set<Job> unfilledJobs = new HashSet<Job>();
+
+        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
+
+        populationManagerMock.processTick(unfilledJobs);
+        expectLastCall().once();
+
+        familyManagerMock.processTick(currentDateMock);
         expectLastCall().once();
 
         control.replay();
@@ -131,16 +143,18 @@ public class TimeLimitModelTest  {
         Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
         Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
 
-        PopulationManager populationManagerMock = createMock(PopulationManager.class);
 
         GregorianCalendar firstDateMock = control.createMock(GregorianCalendar.class);
         expect(firstDateMock.compareTo(endDateMock)).andReturn(-1).once();
         TimeManager timeManagerMock = control.createMock(TimeManager.class);
         expect(timeManagerMock.getCurrentDate()).andReturn(firstDateMock).once();
 
+        PopulationManager populationManagerMock = createMock(PopulationManager.class);
+        FamilyManager familyManagerMock = control.createMock(FamilyManager.class);
+
         control.replay();
 
-        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
         assertFalse(model.isComplete());
 
         control.verify();
@@ -156,16 +170,17 @@ public class TimeLimitModelTest  {
         Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
         Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
 
-        PopulationManager populationManagerMock = createMock(PopulationManager.class);
-
         GregorianCalendar firstDateMock = control.createMock(GregorianCalendar.class);
         expect(firstDateMock.compareTo(endDateMock)).andReturn(0).once();
         TimeManager timeManagerMock = control.createMock(TimeManager.class);
         expect(timeManagerMock.getCurrentDate()).andReturn(firstDateMock).once();
 
+        PopulationManager populationManagerMock = createMock(PopulationManager.class);
+        FamilyManager familyManagerMock = control.createMock(FamilyManager.class);
+
         control.replay();
 
-        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, residences, workplaces);
+        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
         assertTrue(model.isComplete());
 
         control.verify();

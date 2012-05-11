@@ -54,7 +54,7 @@ public class TimeManagerImplTest  {
         control.replay();
 
         TimeManagerImpl manager = new TimeManagerImpl(startDateMock, Calendar.DAY_OF_MONTH, 1, eventBusMock);
-        GregorianCalendar newDate = manager.tick();
+        Calendar newDate = manager.tick();
 
         assertEquals(startDateCloneMock, newDate);
 

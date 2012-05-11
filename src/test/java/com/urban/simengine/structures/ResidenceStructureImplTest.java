@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import org.easymock.IMocksControl;
 
-import com.urban.simengine.agents.HumanAgent;
+import com.urban.simengine.Family;
 
 import java.awt.*;
 import java.util.*;
@@ -22,34 +22,34 @@ public class ResidenceStructureImplTest  {
 
         assertSame(pointMock, residence.getPosition());
         assertSame(dimensionMock, residence.getDimension());
-        assertEquals(2, residence.getMaximumResidents());
-        assertEquals(0, residence.getResidents().size());
+        assertEquals(2, residence.getMaximumFamilies());
+        assertEquals(0, residence.getFamilies().size());
 
         verify(pointMock, dimensionMock);
     }
 
-    @Test public void testConstructorWithResidents() {
+    @Test public void testConstructorWithFamilies() {
         IMocksControl control = createControl();
 
         Point pointMock = control.createMock(Point.class);
         Dimension dimensionMock = control.createMock(Dimension.class);
 
-        HumanAgent humanMock1 = control.createMock(HumanAgent.class);
-        HumanAgent humanMock2 = control.createMock(HumanAgent.class);
-        Set<HumanAgent> residents = new HashSet<HumanAgent>();
-        residents.add(humanMock1);
-        residents.add(humanMock2);
+        Family familyMock1 = control.createMock(Family.class);
+        Family familyMock2 = control.createMock(Family.class);
+        Set<Family> families = new HashSet<Family>();
+        families.add(familyMock1);
+        families.add(familyMock2);
 
         control.replay();
 
-        ResidenceStructure residence = new ResidenceStructureImpl(pointMock, dimensionMock, 2, residents);
+        ResidenceStructure residence = new ResidenceStructureImpl(pointMock, dimensionMock, 2, families);
 
         assertSame(pointMock, residence.getPosition());
         assertSame(dimensionMock, residence.getDimension());
-        assertEquals(2, residence.getMaximumResidents());
-        assertEquals(2, residence.getResidents().size());
-        assertTrue(residence.getResidents().contains(humanMock1));
-        assertTrue(residence.getResidents().contains(humanMock2));
+        assertEquals(2, residence.getMaximumFamilies());
+        assertEquals(2, residence.getFamilies().size());
+        assertTrue(residence.getFamilies().contains(familyMock1));
+        assertTrue(residence.getFamilies().contains(familyMock2));
 
         control.verify();
     }

@@ -2,12 +2,11 @@ package com.urban.simengine.managers.population.growthmodels;
 
 import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.managers.time.TimeManager;
-import org.joda.time.DateTime;
-import org.joda.time.Years;
 
 import java.util.*;
 
 public class AgeBasedGrowthModel implements GrowthModel {
+/*
     int[][] ratios = {
             {15, 19, 123},
             {20, 24, 281},
@@ -17,6 +16,7 @@ public class AgeBasedGrowthModel implements GrowthModel {
             {40, 44, 20},
             {45, 54, 1},
     };
+*/
 
     private TimeManager timeManager;
 
@@ -24,14 +24,16 @@ public class AgeBasedGrowthModel implements GrowthModel {
         this.timeManager = timeManager;
     }
 
+/*
     public AgeBasedGrowthModel(TimeManager timeManager, int[][] ratios) {
         this.timeManager = timeManager;
         this.ratios = ratios;
     }
+*/
 
     public Set<HumanAgent> performGrowth(Set<HumanAgent> humans, int expectedBirths) {
         HashSet<HumanAgent> newHumans = new HashSet<HumanAgent>();
-
+/*
         int[] compiledRatios = new int[ratios.length];
         int sum = 0;
         for (int i = 0; i < ratios.length; i++) {
@@ -48,10 +50,11 @@ public class AgeBasedGrowthModel implements GrowthModel {
         Set<HumanAgent> humansByAgeBracket = this.getHumansByAgeBracket(humans, ratios[foundIndex][0], ratios[foundIndex][1]);
 
         //TODO: what to do next?
-
+*/
         return newHumans;
     }
 
+/*
     private Set<HumanAgent> getHumansByAgeBracket(Set<HumanAgent> humans, int minAge, int maxAge) {
         HashSet<HumanAgent> foundHumans = new HashSet<HumanAgent>();
 
@@ -64,4 +67,5 @@ public class AgeBasedGrowthModel implements GrowthModel {
 
         return foundHumans;
     }
+*/
 }

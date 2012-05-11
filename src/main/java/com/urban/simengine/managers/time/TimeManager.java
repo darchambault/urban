@@ -1,15 +1,15 @@
 package com.urban.simengine.managers.time;
 
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 public interface TimeManager {
-    public GregorianCalendar getStartDate();
+    public Calendar getStartDate();
 
     public int getTickLengthUnit();
 
     public int getTickLength();
 
-    public GregorianCalendar getCurrentDate();
+    public Calendar getCurrentDate();
 
-    public GregorianCalendar tick();
+    public Calendar tick();
 }

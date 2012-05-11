@@ -1,17 +1,15 @@
 package com.urban.simengine.managers.time.events;
 
-import com.urban.simengine.agents.HumanAgent;
-
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 public class TimeTickEventImpl implements TimeTickEvent {
-    private GregorianCalendar time;
+    private Calendar time;
 
-    public TimeTickEventImpl(GregorianCalendar time) {
+    public TimeTickEventImpl(Calendar time) {
         this.time = time;
     }
 
-    public GregorianCalendar getDate() {
+    public Calendar getDate() {
         return this.time;
     }
 }

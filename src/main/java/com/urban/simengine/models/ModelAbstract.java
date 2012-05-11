@@ -2,6 +2,7 @@ package com.urban.simengine.models;
 
 import com.google.common.eventbus.EventBus;
 import com.urban.simengine.Job;
+import com.urban.simengine.managers.family.FamilyManager;
 import com.urban.simengine.managers.population.PopulationManager;
 import com.urban.simengine.managers.time.TimeManager;
 import com.urban.simengine.structures.ResidenceStructure;
@@ -13,17 +14,21 @@ import java.util.Set;
 abstract public class ModelAbstract implements Model {
     private EventBus eventBus;
 
-    private PopulationManager populationManager;
     private TimeManager timeManager;
+    private PopulationManager populationManager;
+    private FamilyManager familyManager;
 
     private Set<ResidenceStructure> residences;
     private Set<WorkStructure> workplaces;
 
-    public ModelAbstract(EventBus eventBus, TimeManager timeManager, PopulationManager populationManager, Set<ResidenceStructure> residences, Set<WorkStructure> workplaces) {
+    public ModelAbstract(EventBus eventBus, TimeManager timeManager, PopulationManager populationManager,
+                         FamilyManager familyManager, Set<ResidenceStructure> residences,
+                         Set<WorkStructure> workplaces) {
         this.eventBus = eventBus;
 
-        this.populationManager = populationManager;
         this.timeManager = timeManager;
+        this.populationManager = populationManager;
+        this.familyManager = familyManager;
 
         this.residences = residences;
         this.workplaces = workplaces;
@@ -33,12 +38,16 @@ abstract public class ModelAbstract implements Model {
         return this.eventBus;
     }
 
+    public TimeManager getTimeManager() {
+        return this.timeManager;
+    }
+
     public PopulationManager getPopulationManager() {
         return this.populationManager;
     }
 
-    public TimeManager getTimeManager() {
-        return this.timeManager;
+    public FamilyManager getFamilyManager() {
+        return this.familyManager;
     }
 
     public Set<ResidenceStructure> getResidences() {
@@ -64,7 +73,8 @@ abstract public class ModelAbstract implements Model {
     }
 
     public void processTick() {
-        populationManager.processTick(this);
+        populationManager.processTick(this.getUnfilledJobs());
+        familyManager.processTick(this.getTimeManager().getCurrentDate());
     }
 
     abstract public boolean isComplete();

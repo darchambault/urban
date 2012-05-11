@@ -1,32 +1,32 @@
 package com.urban.simengine.structures;
 
-import com.urban.simengine.agents.HumanAgent;
+import com.urban.simengine.Family;
 
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ResidenceStructureImpl extends BasicStructureImpl implements ResidenceStructure {
-    private int maximumResidents;
-    private Set<HumanAgent> residents;
+    private int maximumFamilies;
+    private Set<Family> families;
 
-    public ResidenceStructureImpl(Point position, Dimension dimension, int maximumResidents) {
+    public ResidenceStructureImpl(Point position, Dimension dimension, int maximumFamilies) {
         super(position, dimension);
-        this.maximumResidents = maximumResidents;
-        this.residents = new HashSet<HumanAgent>();
+        this.maximumFamilies = maximumFamilies;
+        this.families = new HashSet<Family>();
     }
 
-    public ResidenceStructureImpl(Point position, Dimension dimension, int maximumResidents, Set<HumanAgent> residents) {
+    public ResidenceStructureImpl(Point position, Dimension dimension, int maximumFamilies, Set<Family> families) {
         super(position, dimension);
-        this.maximumResidents = maximumResidents;
-        this.residents = residents;
+        this.maximumFamilies = maximumFamilies;
+        this.families = families;
     }
 
-    public int getMaximumResidents() {
-        return this.maximumResidents;
+    public int getMaximumFamilies() {
+        return this.maximumFamilies;
     }
 
-    public Set<HumanAgent> getResidents() {
-        return this.residents;
+    public Set<Family> getFamilies() {
+        return this.families;
     }
 }

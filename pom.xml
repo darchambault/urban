@@ -10,6 +10,7 @@
 
     <properties>
         <powermock.version>1.4.12</powermock.version>
+        <jbehave.version>3.6.5</jbehave.version>
     </properties>
 
     <build>
@@ -96,6 +97,12 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
             <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>1.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

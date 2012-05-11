@@ -1,11 +1,11 @@
 package com.urban.simengine.structures;
 
-import com.urban.simengine.agents.HumanAgent;
+import com.urban.simengine.Family;
 
 import java.util.Set;
 
 public interface ResidenceStructure extends BasicStructure {
-    public int getMaximumResidents();
+    public int getMaximumFamilies();
 
-    public Set<HumanAgent> getResidents();
+    public Set<Family> getFamilies();
 }

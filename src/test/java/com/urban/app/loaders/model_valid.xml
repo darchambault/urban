@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model startdate="1950-01-01" enddate="1960-01-01" tickunit="YEAR" ticklength="1">
+    <structures>
+        <residences>
+            <residence id="1" capacity="2" x="1" y="1" width="2" height="2" />
+            <residence id="2" capacity="3" x="3" y="1" width="2" height="2" />
+        </residences>
+        <workplaces>
+            <workplace x="5" y="1" width="2" height="2">
+                <jobs>
+                    <job id="1" skill="BASIC" />
+                </jobs>
+            </workplace>
+            <workplace x="7" y="1" width="2" height="2">
+                <jobs>
+                    <job id="2" skill="INTERMEDIATE" />
+                    <job id="3" skill="EXPERT" />
+                </jobs>
+            </workplace>
+        </workplaces>
+    </structures>
+    <families>
+        <family residence="1">
+            <members>
+                <human id="1" firstname="James" lastname="Smith" dateofbirth="1910-01-01" gender="MALE" skill="BASIC" job="1" />
+                <human id="2" firstname="Jill" lastname="Smith" dateofbirth="1910-01-01" gender="FEMALE" skill="BASIC" />
+                <human id="3" firstname="Jennifer" lastname="Smith" dateofbirth="1933-01-01" gender="FEMALE" skill="BASIC">
+                    <parent id="1" />
+                    <parent id="2" />
+                </human>
+            </members>
+        </family>
+        <family>
+            <members>
+                <human id="4" firstname="John" lastname="Doe" dateofbirth="1910-01-01" gender="MALE" skill="EXPERT" />
+                <human id="5" firstname="Joan" lastname="Doe" dateofbirth="1910-01-01" gender="FEMALE" skill="INTERMEDIATE" />
+                <human id="6" firstname="Jimmy" lastname="Doe" dateofbirth="1935-01-01" gender="MALE" skill="NONE">
+                    <parent id="4" />
+                    <parent id="5" />
+                </human>
+            </members>
+        </family>
+    </families>
+</model>
