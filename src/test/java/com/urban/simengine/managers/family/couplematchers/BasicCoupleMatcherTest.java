@@ -42,9 +42,9 @@ public class BasicCoupleMatcherTest {
         Family family2 = control.createMock(Family.class);
         Family family3 = control.createMock(Family.class);
 
-        this.mockupFamily(control, family1, new HumanAgent[] {humanMock1, humanMock4});
-        this.mockupFamily(control, family2, new HumanAgent[] {humanMock2});
-        this.mockupFamily(control, family3, new HumanAgent[] {humanMock3});
+        this.mockupFamily(family1, new HumanAgent[] {humanMock1, humanMock4});
+        this.mockupFamily(family2, new HumanAgent[] {humanMock2});
+        this.mockupFamily(family3, new HumanAgent[] {humanMock3});
 
         this.expectFamilyMerge(control, humanMock3, family3, family2);
 
@@ -75,8 +75,8 @@ public class BasicCoupleMatcherTest {
         Family family1 = control.createMock(Family.class);
         Family family2 = control.createMock(Family.class);
 
-        this.mockupFamily(control, family1, new HumanAgent[] {humanMock1, humanMock4});
-        this.mockupFamily(control, family2, new HumanAgent[] {humanMock2, humanMock3});
+        this.mockupFamily(family1, new HumanAgent[] {humanMock1, humanMock4});
+        this.mockupFamily(family2, new HumanAgent[] {humanMock2, humanMock3});
 
         Set<Family> families = new HashSet<Family>();
         families.add(family1);
@@ -104,9 +104,9 @@ public class BasicCoupleMatcherTest {
         Family family2 = control.createMock(Family.class);
         Family family3 = control.createMock(Family.class);
 
-        this.mockupFamily(control, family1, new HumanAgent[] {humanMock1});
-        this.mockupFamily(control, family2, new HumanAgent[] {humanMock2, humanMock3});
-        this.mockupFamily(control, family3, new HumanAgent[] {humanMock4});
+        this.mockupFamily(family1, new HumanAgent[] {humanMock1});
+        this.mockupFamily(family2, new HumanAgent[] {humanMock2, humanMock3});
+        this.mockupFamily(family3, new HumanAgent[] {humanMock4});
 
         Set<Family> families = new HashSet<Family>();
         families.add(family1);
@@ -129,7 +129,7 @@ public class BasicCoupleMatcherTest {
         return humanMock;
     }
 
-    private void mockupFamily(IMocksControl control, Family family, HumanAgent[] humanMocks) {
+    private void mockupFamily(Family family, HumanAgent[] humanMocks) {
         Set<HumanAgent> familyHumans = new HashSet<HumanAgent>();
         for (HumanAgent humanMock : humanMocks) {
             familyHumans.add(humanMock);

@@ -21,6 +21,8 @@ public interface Model {
 
     public Set<ResidenceStructure> getResidences();
 
+    public Set<ResidenceStructure> getResidencesWithVacancy();
+
     public Set<WorkStructure> getWorkplaces();
 
     public Set<Job> getUnfilledJobs();

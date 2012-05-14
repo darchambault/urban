@@ -9,6 +9,8 @@ import com.urban.simengine.managers.family.childmovers.BasicChildMover;
 import com.urban.simengine.managers.family.childmovers.ChildMover;
 import com.urban.simengine.managers.family.couplematchers.BasicCoupleMatcher;
 import com.urban.simengine.managers.family.couplematchers.CoupleMatcher;
+import com.urban.simengine.managers.family.movers.BasicMover;
+import com.urban.simengine.managers.family.movers.Mover;
 import com.urban.simengine.managers.population.PopulationManager;
 import com.urban.simengine.managers.population.PopulationManagerImpl;
 import com.urban.simengine.managers.population.jobfinders.BasicJobFinder;
@@ -206,9 +208,10 @@ public class XmlLoader implements Loader {
                 populationManager.getHumans().add(human);
             }
 
+            Mover mover = new BasicMover();
             CoupleMatcher coupleMatcher = new BasicCoupleMatcher();
             ChildMover childMover = new BasicChildMover();
-            FamilyManager familyManager = new FamilyManagerImpl(eventBus, coupleMatcher, childMover);
+            FamilyManager familyManager = new FamilyManagerImpl(eventBus, mover, coupleMatcher, childMover);
             for (Family family : this.families) {
                 familyManager.getFamilies().add(family);
             }

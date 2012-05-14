@@ -1,11 +1,13 @@
 package com.urban.simengine.models;
 
 import com.google.common.eventbus.EventBus;
+import com.urban.simengine.Family;
 import com.urban.simengine.managers.family.FamilyManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import org.easymock.IMocksControl;
+import static org.hamcrest.Matchers.*;
 
 import com.urban.simengine.managers.time.TimeManager;
 import com.urban.simengine.managers.population.PopulationManager;
@@ -101,6 +103,51 @@ public class TimeLimitModelTest  {
         control.verify();
     }
 
+    @Test public void testGetResidencesWithVacancy() {
+        IMocksControl control = createControl();
+
+        EventBus eventBusMock = control.createMock(EventBus.class);
+        GregorianCalendar endDateMock = control.createMock(GregorianCalendar.class);
+        TimeManager timeManagerMock = control.createMock(TimeManager.class);
+        PopulationManager populationManagerMock = control.createMock(PopulationManager.class);
+        FamilyManager familyManagerMock = control.createMock(FamilyManager.class);
+        Set<ResidenceStructure> residences = new HashSet<ResidenceStructure>();
+        Set<WorkStructure> workplaces = new HashSet<WorkStructure>();
+
+        ResidenceStructure residenceMock1 = control.createMock(ResidenceStructure.class);
+        residences.add(residenceMock1);
+        Set<Family> residentFamiliesMock1 = control.createMock(Set.class);
+        expect(residenceMock1.getMaximumFamilies()).andReturn(1).anyTimes();
+        expect(residenceMock1.getFamilies()).andReturn(residentFamiliesMock1).anyTimes();
+        expect(residentFamiliesMock1.size()).andReturn(0).anyTimes();
+
+        ResidenceStructure residenceMock2 = control.createMock(ResidenceStructure.class);
+        residences.add(residenceMock2);
+        Set<Family> residentFamiliesMock2 = control.createMock(Set.class);
+        expect(residenceMock2.getMaximumFamilies()).andReturn(2).anyTimes();
+        expect(residenceMock2.getFamilies()).andReturn(residentFamiliesMock2).anyTimes();
+        expect(residentFamiliesMock2.size()).andReturn(2).anyTimes();
+
+        ResidenceStructure residenceMock3 = control.createMock(ResidenceStructure.class);
+        residences.add(residenceMock3);
+        Set<Family> residentFamiliesMock3 = control.createMock(Set.class);
+        expect(residenceMock3.getMaximumFamilies()).andReturn(2).anyTimes();
+        expect(residenceMock3.getFamilies()).andReturn(residentFamiliesMock3).anyTimes();
+        expect(residentFamiliesMock3.size()).andReturn(1).anyTimes();
+
+        control.replay();
+
+        TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
+
+        Set<ResidenceStructure> residencesWithVacancy = model.getResidencesWithVacancy();
+
+        assertThat(residencesWithVacancy.size(), equalTo(2));
+        assertThat(residencesWithVacancy, hasItem(residenceMock1));
+        assertThat(residencesWithVacancy, hasItem(residenceMock3));
+
+        control.verify();
+    }
+
     @Test public void testProcessTick() {
         IMocksControl control = createControl();
 
@@ -124,7 +171,7 @@ public class TimeLimitModelTest  {
         populationManagerMock.processTick(unfilledJobs);
         expectLastCall().once();
 
-        familyManagerMock.processTick(currentDateMock);
+        familyManagerMock.processTick(currentDateMock, residences);
         expectLastCall().once();
 
         control.replay();

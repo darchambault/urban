@@ -50,7 +50,7 @@ public class BasicChildMoverTest {
 
         Family familyMock1 = control.createMock(Family.class);
 
-        this.mockupFamily(control, familyMock1, new HumanAgent[]{humanMock1, humanMock2});
+        this.mockupFamily(familyMock1, new HumanAgent[]{humanMock1, humanMock2});
 
         Set<Family> families = new HashSet<Family>();
         families.add(familyMock1);
@@ -76,7 +76,7 @@ public class BasicChildMoverTest {
 
         Family familyMock1 = control.createMock(Family.class);
 
-        this.mockupFamily(control, familyMock1, new HumanAgent[]{humanMock1, humanMock2, humanMock3});
+        this.mockupFamily(familyMock1, new HumanAgent[]{humanMock1, humanMock2, humanMock3});
 
         Set<Family> families = new HashSet<Family>();
         families.add(familyMock1);
@@ -103,16 +103,16 @@ public class BasicChildMoverTest {
         Family familyMock1 = control.createMock(Family.class);
         Family familyMock2 = control.createMock(Family.class);
 
-        this.mockupFamily(control, familyMock1, new HumanAgent[]{humanMock1, humanMock2, humanMock3});
+        this.mockupFamily(familyMock1, new HumanAgent[]{humanMock1, humanMock2, humanMock3});
 
-        this.expectFamilyCreation(control, humanMock3, familyMock2);
+        this.expectFamilyCreation(humanMock3, familyMock2);
 
         Set<Family> families = new HashSet<Family>();
         families.add(familyMock1);
 
         control.replay();
 
-        ChildMover mover = PowerMock.createPartialMock(BasicChildMover.class, new String[]{"getNewFamilyInstance"});
+        ChildMover mover = PowerMock.createPartialMock(BasicChildMover.class, "getNewFamilyInstance");
         expectPrivate(mover, "getNewFamilyInstance").andReturn(familyMock2);
 
         PowerMock.replay(mover);
@@ -137,7 +137,7 @@ public class BasicChildMoverTest {
 
         Family familyMock1 = control.createMock(Family.class);
 
-        this.mockupFamily(control, familyMock1, new HumanAgent[]{humanMock1, humanMock2, humanMock3});
+        this.mockupFamily(familyMock1, new HumanAgent[]{humanMock1, humanMock2, humanMock3});
 
         Set<Family> families = new HashSet<Family>();
         families.add(familyMock1);
@@ -160,15 +160,13 @@ public class BasicChildMoverTest {
         expect(humanMock.getAge(anyObject(Calendar.class))).andReturn(age).anyTimes();
         Set<HumanAgent> parentsSet = new HashSet<HumanAgent>();
         if (parents != null) {
-            for (HumanAgent parent : parents) {
-                parentsSet.add(parent);
-            }
+            Collections.addAll(parentsSet, parents);
         }
         expect(humanMock.getParents()).andReturn(parentsSet).anyTimes();
         return humanMock;
     }
 
-    private void mockupFamily(IMocksControl control, Family family, HumanAgent[] humanMocks) {
+    private void mockupFamily(Family family, HumanAgent[] humanMocks) {
         Set<HumanAgent> familyHumans = new HashSet<HumanAgent>();
         for (HumanAgent humanMock : humanMocks) {
             familyHumans.add(humanMock);
@@ -177,7 +175,7 @@ public class BasicChildMoverTest {
         expect(family.getMembers()).andReturn(familyHumans).anyTimes();
     }
 
-    private void expectFamilyCreation(IMocksControl control, HumanAgent human, Family newFamily) {
+    private void expectFamilyCreation(HumanAgent human, Family newFamily) {
         expect(human.setFamily(newFamily)).andReturn(human).once();
         expect(newFamily.getMembers()).andReturn(new HashSet<HumanAgent>()).once();
     }

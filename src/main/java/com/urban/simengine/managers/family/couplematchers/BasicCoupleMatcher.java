@@ -48,7 +48,7 @@ public class BasicCoupleMatcher implements CoupleMatcher {
         Family newFamily = human1.getFamily();
         Family oldFamily = human2.getFamily();
 
-//        oldFamily.getMembers().remove(human2);
+        oldFamily.getMembers().remove(human2);
         newFamily.getMembers().add(human2);
         human2.setFamily(newFamily);
 

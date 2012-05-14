@@ -28,15 +28,13 @@ public class BasicChildMover implements ChildMover {
         return newAdults;
     }
 
-    private Family moveOutChild(HumanAgent child) {
+    private void moveOutChild(HumanAgent child) {
         Family newFamily = this.getNewFamilyInstance();
         Family oldFamily = child.getFamily();
 
         oldFamily.getMembers().remove(child);
         child.setFamily(newFamily);
         newFamily.getMembers().add(child);
-
-        return newFamily;
     }
 
     private Family getNewFamilyInstance() {

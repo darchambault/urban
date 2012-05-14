@@ -54,6 +54,18 @@ abstract public class ModelAbstract implements Model {
         return this.residences;
     }
 
+    public Set<ResidenceStructure> getResidencesWithVacancy() {
+        HashSet<ResidenceStructure> residencesWithVacancy = new HashSet<ResidenceStructure>();
+
+        for (ResidenceStructure residenceStructure : this.getResidences()) {
+            if (residenceStructure.getFamilies().size() < residenceStructure.getMaximumFamilies()) {
+                residencesWithVacancy.add(residenceStructure);
+            }
+        }
+
+        return residencesWithVacancy;
+    }
+
     public Set<WorkStructure> getWorkplaces() {
         return this.workplaces;
     }
@@ -74,7 +86,7 @@ abstract public class ModelAbstract implements Model {
 
     public void processTick() {
         populationManager.processTick(this.getUnfilledJobs());
-        familyManager.processTick(this.getTimeManager().getCurrentDate());
+        familyManager.processTick(this.getTimeManager().getCurrentDate(), this.getResidencesWithVacancy());
     }
 
     abstract public boolean isComplete();
