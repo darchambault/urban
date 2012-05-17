@@ -13,6 +13,8 @@ import com.urban.simengine.managers.family.movers.BasicMover;
 import com.urban.simengine.managers.family.movers.Mover;
 import com.urban.simengine.managers.population.PopulationManager;
 import com.urban.simengine.managers.population.PopulationManagerImpl;
+import com.urban.simengine.managers.population.growthmodels.AgeBasedGrowthModel;
+import com.urban.simengine.managers.population.growthmodels.GrowthModel;
 import com.urban.simengine.managers.population.jobfinders.BasicJobFinder;
 import com.urban.simengine.managers.population.jobfinders.JobFinder;
 import com.urban.simengine.managers.time.TimeManager;
@@ -203,7 +205,8 @@ public class XmlLoader implements Loader {
             TimeManager timeManager = new TimeManagerImpl(startDate, tickLengthUnit, tickLength, eventBus);
 
             JobFinder jobFinder = new BasicJobFinder();
-            PopulationManager populationManager = new PopulationManagerImpl(jobFinder, eventBus);
+            GrowthModel growthModel = new AgeBasedGrowthModel();
+            PopulationManager populationManager = new PopulationManagerImpl(eventBus, jobFinder, growthModel);
             for (HumanAgent human : this.humans.values()) {
                 populationManager.getHumans().add(human);
             }

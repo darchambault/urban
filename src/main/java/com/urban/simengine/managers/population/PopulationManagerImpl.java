@@ -1,23 +1,32 @@
 package com.urban.simengine.managers.population;
 
-import com.google.common.eventbus.EventBus;
 import com.urban.simengine.Job;
 import com.urban.simengine.agents.HumanAgent;
+import com.urban.simengine.managers.population.events.BirthEventImpl;
 import com.urban.simengine.managers.population.events.JobFoundEventImpl;
+import com.urban.simengine.managers.population.growthmodels.GrowthModel;
 import com.urban.simengine.managers.population.jobfinders.JobFinder;
 
+import com.google.common.eventbus.EventBus;
+
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class PopulationManagerImpl implements PopulationManager {
-    private JobFinder jobFinder;
     private EventBus eventBus;
+    private JobFinder jobFinder;
+    private GrowthModel growthModel;
+
+    private int birthRate = 17;
+
     private Set<HumanAgent> humans = new HashSet<HumanAgent>();
 
-    public PopulationManagerImpl(JobFinder jobFinder, EventBus eventBus) {
-        this.jobFinder = jobFinder;
+    public PopulationManagerImpl(EventBus eventBus, JobFinder jobFinder, GrowthModel growthModel) {
         this.eventBus = eventBus;
+        this.jobFinder = jobFinder;
+        this.growthModel = growthModel;
     }
 
     public Set<HumanAgent> getHumans() {
@@ -54,10 +63,25 @@ public class PopulationManagerImpl implements PopulationManager {
         return Collections.unmodifiableSet(singleHumans);
     }
 
-    public void processTick(Set<Job> unfilledJobs) {
+    public int getBirthRate() {
+        return this.birthRate;
+    }
+
+    public PopulationManager setBirthRate(int birthRate) {
+        this.birthRate = birthRate;
+        return this;
+    }
+
+    public void processTick(Calendar currentDate, int tickLength, int tickLengthUnit, Set<Job> unfilledJobs) {
         Set<HumanAgent> humansWhoFoundJobs = this.jobFinder.findJobs(this.getUnemployedHumans(), unfilledJobs);
         for (HumanAgent human : humansWhoFoundJobs) {
             this.eventBus.post(new JobFoundEventImpl(human));
+        }
+
+        Set<HumanAgent> newBirths = this.growthModel.performGrowth(this.getHumans(), this.getBirthRate(), currentDate, tickLength, tickLengthUnit);
+        for (HumanAgent human : newBirths) {
+            this.getHumans().add(human);
+            this.eventBus.post(new BirthEventImpl(human));
         }
     }
 }

@@ -4,12 +4,15 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import org.easymock.IMocksControl;
+import static org.hamcrest.Matchers.*;
 
 import com.urban.simengine.Family;
 import com.urban.simengine.Job;
 import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.managers.population.jobfinders.JobFinder;
 import com.urban.simengine.managers.population.events.JobFoundEvent;
+import com.urban.simengine.managers.population.events.BirthEvent;
+import com.urban.simengine.managers.population.growthmodels.GrowthModel;
 
 import com.google.common.eventbus.EventBus;
 
@@ -19,12 +22,13 @@ public class PopulationManagerImplTest {
     @Test public void testConstructorWithNoHumans() {
         IMocksControl control = createControl();
 
-        JobFinder jobFinderMock = control.createMock(JobFinder.class);
         EventBus eventBusMock = control.createMock(EventBus.class);
+        JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
 
         assertEquals(0, manager.getHumans().size());
 
@@ -34,13 +38,14 @@ public class PopulationManagerImplTest {
     @Test public void testAddHuman() {
         IMocksControl control = createControl();
 
-        JobFinder jobFinderMock = control.createMock(JobFinder.class);
         EventBus eventBusMock = control.createMock(EventBus.class);
+        JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
         HumanAgent humanMock = control.createMock(HumanAgent.class);
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
         manager.getHumans().add(humanMock);
 
         assertEquals(1, manager.getHumans().size());
@@ -52,14 +57,15 @@ public class PopulationManagerImplTest {
     @Test public void testGetUnemployedHumans() {
         IMocksControl control = createControl();
 
-        JobFinder jobFinderMock = control.createMock(JobFinder.class);
         EventBus eventBusMock = control.createMock(EventBus.class);
+        JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
 
         List<HumanAgent> humans = this.getHumans(control);
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
         for (HumanAgent human : humans) {
             manager.getHumans().add(human);
         }
@@ -76,14 +82,15 @@ public class PopulationManagerImplTest {
     @Test public void testGetEmployedHumans() {
         IMocksControl control = createControl();
 
-        JobFinder jobFinderMock = control.createMock(JobFinder.class);
         EventBus eventBusMock = control.createMock(EventBus.class);
+        JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
 
         List<HumanAgent> humans = this.getHumans(control);
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
         for (HumanAgent human : humans) {
             manager.getHumans().add(human);
         }
@@ -100,14 +107,15 @@ public class PopulationManagerImplTest {
     @Test public void testGetSingleHumans() {
         IMocksControl control = createControl();
 
-        JobFinder jobFinderMock = control.createMock(JobFinder.class);
         EventBus eventBusMock = control.createMock(EventBus.class);
+        JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
 
         List<HumanAgent> humans = this.getHumans(control);
 
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
         for (HumanAgent human : humans) {
             manager.getHumans().add(human);
         }
@@ -121,10 +129,31 @@ public class PopulationManagerImplTest {
         control.verify();
     }
 
+    @Test public void testSetBirthRate() {
+        IMocksControl control = createControl();
+
+        EventBus eventBusMock = control.createMock(EventBus.class);
+        JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
+
+        control.replay();
+
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
+        manager.setBirthRate(20);
+
+        assertThat(manager.getBirthRate(), equalTo(20));
+
+        control.verify();
+    }
+
     @Test public void testProcessTick() {
         IMocksControl control = createControl();
 
         JobFinder jobFinderMock = control.createMock(JobFinder.class);
+        GrowthModel growthModel = control.createMock(GrowthModel.class);
+        Calendar currentDateMock = control.createMock(Calendar.class);
+
+        int birthRate = 20;
 
         List<HumanAgent> humans = this.getHumans(control);
         List<Job> jobs = this.getJobs(control);
@@ -137,19 +166,28 @@ public class PopulationManagerImplTest {
 
         expect(jobFinderMock.findJobs(unemployedHumans, jobsSet)).andReturn(unemployedHumans).once();
 
+        Set<HumanAgent> newBirths = new HashSet<HumanAgent>();
+        newBirths.add(control.createMock(HumanAgent.class));
+
+        expect(growthModel.performGrowth(new HashSet<HumanAgent>(humans), birthRate, currentDateMock, 1, Calendar.MONTH)).andReturn(newBirths).once();
+
         EventBus eventBusMock = control.createMock(EventBus.class);
 
         eventBusMock.post(anyObject(JobFoundEvent.class));
         expectLastCall().times(2);
 
+        eventBusMock.post(anyObject(BirthEvent.class));
+        expectLastCall().times(1);
+
         control.replay();
 
-        PopulationManager manager = new PopulationManagerImpl(jobFinderMock, eventBusMock);
+        PopulationManager manager = new PopulationManagerImpl(eventBusMock, jobFinderMock, growthModel);
+        manager.setBirthRate(birthRate);
         manager.getHumans().add(humans.get(0));
         manager.getHumans().add(humans.get(1));
         manager.getHumans().add(humans.get(2));
         manager.getHumans().add(humans.get(3));
-        manager.processTick(jobsSet);
+        manager.processTick(currentDateMock, 1, Calendar.MONTH, jobsSet);
 
         control.verify();
     }

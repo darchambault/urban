@@ -85,7 +85,8 @@ abstract public class ModelAbstract implements Model {
     }
 
     public void processTick() {
-        populationManager.processTick(this.getUnfilledJobs());
+        populationManager.processTick(this.getTimeManager().getCurrentDate(), this.getTimeManager().getTickLength(),
+                this.getTimeManager().getTickLengthUnit(), this.getUnfilledJobs());
         familyManager.processTick(this.getTimeManager().getCurrentDate(), this.getResidencesWithVacancy());
     }
 

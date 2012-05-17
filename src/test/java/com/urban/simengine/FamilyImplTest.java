@@ -1,9 +1,12 @@
 package com.urban.simengine;
 
 import org.junit.Test;
+
+import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.*;
 import org.easymock.IMocksControl;
 import static org.easymock.EasyMock.createControl;
+import static org.hamcrest.Matchers.*;
 
 import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.structures.ResidenceStructure;
@@ -77,5 +80,46 @@ public class FamilyImplTest {
         assertSame(residenceMock, family.getResidence());
 
         control.verify();
+    }
+
+    @Test public void testGetParentsChildren() {
+        IMocksControl control = createControl();
+
+        HumanAgent parentMock1 = control.createMock(HumanAgent.class);
+        HumanAgent parentMock2 = control.createMock(HumanAgent.class);
+        HumanAgent childMock1 = control.createMock(HumanAgent.class);
+
+        Set<HumanAgent> parentsSet = new HashSet<HumanAgent>();
+        parentsSet.add(parentMock1);
+        parentsSet.add(parentMock2);
+
+        Set<HumanAgent> childrenSet = new HashSet<HumanAgent>();
+        childrenSet.add(childMock1);
+
+        expect(parentMock1.getParents()).andReturn(new HashSet<HumanAgent>()).anyTimes();
+        expect(parentMock1.getChildren()).andReturn(childrenSet).anyTimes();
+        expect(parentMock2.getParents()).andReturn(new HashSet<HumanAgent>()).anyTimes();
+        expect(parentMock2.getChildren()).andReturn(childrenSet).anyTimes();
+        expect(childMock1.getParents()).andReturn(parentsSet).anyTimes();
+        expect(childMock1.getChildren()).andReturn(new HashSet<HumanAgent>()).anyTimes();
+
+        control.replay();
+
+        Family family = new FamilyImpl();
+        family.getMembers().add(parentMock1);
+        family.getMembers().add(parentMock2);
+        family.getMembers().add(childMock1);
+
+        Set<HumanAgent> actualParents = family.getParents();
+        Set<HumanAgent> actualChildren = family.getChildren();
+
+        control.verify();
+
+        assertThat(actualParents.size(), equalTo(2));
+        assertThat(actualParents, hasItem(parentMock1));
+        assertThat(actualParents, hasItem(parentMock2));
+
+        assertThat(actualChildren.size(), equalTo(1));
+        assertThat(actualChildren, hasItem(childMock1));
     }
 }

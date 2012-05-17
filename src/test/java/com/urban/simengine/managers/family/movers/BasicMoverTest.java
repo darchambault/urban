@@ -78,7 +78,7 @@ public class BasicMoverTest {
 
         Set<Family> residentFamiliesMock = control.createMock(Set.class);
 
-        Set<Family> families = new HashSet<Family>();
+        Set<Family> families = new LinkedHashSet<Family>();
 
         HumanAgent humanMock1 = control.createMock(HumanAgent.class);
         Family familyMock1 = control.createMock(Family.class);

@@ -22,6 +22,26 @@ public class FamilyImpl implements Family {
         return this.members;
     }
 
+    public Set<HumanAgent> getParents() {
+        Set<HumanAgent> parents = new HashSet<HumanAgent>();
+        for (HumanAgent human : this.getMembers()) {
+            if (human.getParents().isEmpty() || !this.getMembers().containsAll(human.getParents())) {
+                parents.add(human);
+            }
+        }
+        return parents;
+    }
+
+    public Set<HumanAgent> getChildren() {
+        Set<HumanAgent> children = new HashSet<HumanAgent>();
+        for (HumanAgent human : this.getMembers()) {
+            if (human.getChildren().isEmpty() && this.getMembers().containsAll(human.getParents())) {
+                children.add(human);
+            }
+        }
+        return children;
+    }
+
     public ResidenceStructure getResidence() {
         return this.residence;
     }

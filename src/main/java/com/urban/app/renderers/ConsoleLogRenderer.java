@@ -5,12 +5,14 @@ import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.managers.family.events.ChildMovedOutEvent;
 import com.urban.simengine.managers.family.events.CoupleCreatedEvent;
 import com.urban.simengine.managers.family.events.FamilyMovedInEvent;
+import com.urban.simengine.managers.population.events.BirthEvent;
 import com.urban.simengine.managers.population.events.JobFoundEvent;
 import com.urban.simengine.managers.time.events.TimeTickEvent;
 import com.urban.simengine.models.Model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 public class ConsoleLogRenderer implements Renderer {
     private Model model;
@@ -48,5 +50,12 @@ public class ConsoleLogRenderer implements Renderer {
     @Subscribe
     public void handleFamilyMovedInEvent(FamilyMovedInEvent ev) {
         System.out.println(ev.getFamily()+" has now moved in at "+ev.getFamily().getResidence());
+    }
+
+    @Subscribe
+    public void handleBirthEvent(BirthEvent ev) {
+        Set<HumanAgent> parentsSet = ev.getHuman().getParents();
+        HumanAgent[] parentsArray = parentsSet.toArray(new HumanAgent[parentsSet.size()]);
+        System.out.println(parentsArray[0]+" and "+parentsArray[1]+" have given birth to "+ev.getHuman());
     }
 }

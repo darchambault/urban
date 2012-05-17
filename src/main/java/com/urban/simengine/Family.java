@@ -8,6 +8,10 @@ import java.util.Set;
 public interface Family {
     public Set<HumanAgent> getMembers();
 
+    public Set<HumanAgent> getParents();
+
+    public Set<HumanAgent> getChildren();
+
     public ResidenceStructure getResidence();
 
     public Family setResidence(ResidenceStructure residence);

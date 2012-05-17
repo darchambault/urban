@@ -1,14 +1,10 @@
 package com.urban.simengine.managers.family;
 
-import com.urban.simengine.agents.HumanAgent;
-import com.urban.simengine.managers.family.events.FamilyMovedInEvent;
-import com.urban.simengine.managers.family.movers.Mover;
-import com.urban.simengine.structures.ResidenceStructure;
 import org.junit.Test;
-import org.easymock.IMocksControl;
-import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.easymock.IMocksControl;
+import static org.easymock.EasyMock.*;
 
 import com.urban.simengine.Family;
 import com.urban.simengine.managers.family.couplematchers.CoupleMatcher;
@@ -17,6 +13,10 @@ import com.urban.simengine.managers.family.childmovers.ChildMover;
 import com.urban.simengine.managers.family.events.ChildMovedOutEvent;
 import com.urban.simengine.managers.time.TimeManager;
 import com.urban.simengine.models.Model;
+import com.urban.simengine.agents.HumanAgent;
+import com.urban.simengine.managers.family.events.FamilyMovedInEvent;
+import com.urban.simengine.managers.family.movers.Mover;
+import com.urban.simengine.structures.ResidenceStructure;
 
 import com.google.common.eventbus.EventBus;
 
@@ -109,10 +109,35 @@ public class FamilyManagerImplTest {
         Family familyMock1 = control.createMock(Family.class);
         Family familyMock2 = control.createMock(Family.class);
         Family familyMock3 = control.createMock(Family.class);
+        Family familyMock4 = control.createMock(Family.class);
+
+        Set<HumanAgent> family1MembersMock = control.createMock(Set.class);
+        expect(family1MembersMock.size()).andReturn(1).anyTimes();
+
+        expect(familyMock1.getMembers()).andReturn(family1MembersMock).anyTimes();
+
+        Set<HumanAgent> family2MembersMock = control.createMock(Set.class);
+        expect(family2MembersMock.size()).andReturn(1).anyTimes();
+
+        expect(familyMock2.getMembers()).andReturn(family2MembersMock).anyTimes();
+
+        Set<HumanAgent> family3MembersMock = control.createMock(Set.class);
+        expect(family3MembersMock.size()).andReturn(1).anyTimes();
+
+        expect(familyMock3.getMembers()).andReturn(family3MembersMock).anyTimes();
+
+        Set<HumanAgent> family4MembersMock = control.createMock(Set.class);
+        expect(family4MembersMock.size()).andReturn(0).anyTimes();
+
+        expect(familyMock4.getMembers()).andReturn(family4MembersMock).anyTimes();
 
         Set<Family> families = new HashSet<Family>();
         families.add(familyMock1);
         families.add(familyMock2);
+        families.add(familyMock4);
+
+        Set<Family> homelessFamilies = new HashSet<Family>();
+        homelessFamilies.add(familyMock1);
 
         Set<Family> newCouplesFamilies = new HashSet<Family>();
         newCouplesFamilies.add(familyMock1);
@@ -143,16 +168,22 @@ public class FamilyManagerImplTest {
         ResidenceStructure residenceMock = control.createMock(ResidenceStructure.class);
         residences.add(residenceMock);
 
-        expect(moverMock.moveIn(families, residences)).andReturn(movedInFamilies).once();
+        expect(moverMock.moveIn(homelessFamilies, residences)).andReturn(movedInFamilies).once();
 
         eventBusMock.post(anyObject(FamilyMovedInEvent.class));
         expectLastCall().times(1);
 
+        FamilyManager manager = createMockBuilder(FamilyManagerImpl.class)
+                .withConstructor(eventBusMock, moverMock, coupleMatcherMock, childMoverMock)
+                .addMockedMethod("getFamilies")
+                .addMockedMethod("getHomelessFamilies")
+                .createMock(control);
+
+        expect(manager.getFamilies()).andReturn(families).anyTimes();
+        expect(manager.getHomelessFamilies()).andReturn(homelessFamilies).anyTimes();
+
         control.replay();
 
-        FamilyManager manager = new FamilyManagerImpl(eventBusMock, moverMock, coupleMatcherMock, childMoverMock);
-        manager.getFamilies().add(familyMock1);
-        manager.getFamilies().add(familyMock2);
         manager.processTick(currentDateMock, residences);
 
         control.verify();

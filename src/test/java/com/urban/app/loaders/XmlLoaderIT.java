@@ -1,5 +1,10 @@
 package com.urban.app.loaders;
 
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.urban.simengine.*;
 import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.agents.HumanAgentImpl;
@@ -7,11 +12,6 @@ import com.urban.simengine.structures.ResidenceStructure;
 import com.urban.simengine.structures.ResidenceStructureImpl;
 import com.urban.simengine.structures.WorkStructure;
 import com.urban.simengine.structures.WorkStructureImpl;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import com.urban.simengine.models.TimeLimitModel;
 
 import java.awt.*;
@@ -146,9 +146,7 @@ public class XmlLoaderIT {
     }
 
     private boolean compareHumans(HumanAgent human1, HumanAgent human2) {
-        boolean isSame = true;
-
-        isSame &= human1.getFirstName().equals(human2.getFirstName());
+        boolean isSame = human1.getFirstName().equals(human2.getFirstName());
         isSame &= human1.getLastName().equals(human2.getLastName());
         isSame &= human1.getGender() == human2.getGender();
         isSame &= human1.getDateOfBirth().compareTo(human2.getDateOfBirth()) == 0;
@@ -188,9 +186,7 @@ public class XmlLoaderIT {
     }
 
     private boolean compareResidences(ResidenceStructure residence1, ResidenceStructure residence2) {
-        boolean isSame = true;
-
-        isSame &= residence1.getMaximumFamilies() == residence2.getMaximumFamilies();
+        boolean isSame = residence1.getMaximumFamilies() == residence2.getMaximumFamilies();
         isSame &= residence1.getPosition().equals(residence2.getPosition());
         isSame &= residence1.getDimension().equals(residence2.getDimension());
 
@@ -217,9 +213,7 @@ public class XmlLoaderIT {
     }
 
     private boolean compareWorkplaces(WorkStructure workplace1, WorkStructure workplace2) {
-        boolean isSame = true;
-
-        isSame &= workplace1.getPosition().equals(workplace2.getPosition());
+        boolean isSame = workplace1.getPosition().equals(workplace2.getPosition());
         isSame &= workplace1.getDimension().equals(workplace2.getDimension());
 
         isSame &= workplace1.getJobs().size() == workplace2.getJobs().size();
@@ -247,9 +241,7 @@ public class XmlLoaderIT {
     }
 
     private boolean compareJobs(Job job1, Job job2) {
-        boolean isSame = true;
-
-        isSame &= job1.getSkillLevel() == job2.getSkillLevel();
+        boolean isSame = job1.getSkillLevel() == job2.getSkillLevel();
         isSame &= (job1.getHuman() == null && job2.getHuman() == null)
                 || (job1.getHuman() != null && job2.getHuman() != null && job1.getHuman().getFirstName().equals(job2.getHuman().getFirstName()) && job1.getHuman().getLastName().equals(job2.getHuman().getLastName()));
 

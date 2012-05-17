@@ -163,12 +163,14 @@ public class TimeLimitModelTest  {
         Calendar currentDateMock = control.createMock(Calendar.class);
 
         expect(timeManagerMock.getCurrentDate()).andReturn(currentDateMock).anyTimes();
+        expect(timeManagerMock.getTickLength()).andReturn(1).anyTimes();
+        expect(timeManagerMock.getTickLengthUnit()).andReturn(Calendar.MONTH).anyTimes();
 
         Set<Job> unfilledJobs = new HashSet<Job>();
 
         TimeLimitModel model = new TimeLimitModel(eventBusMock, timeManagerMock, endDateMock, populationManagerMock, familyManagerMock, residences, workplaces);
 
-        populationManagerMock.processTick(unfilledJobs);
+        populationManagerMock.processTick(currentDateMock, 1, Calendar.MONTH, unfilledJobs);
         expectLastCall().once();
 
         familyManagerMock.processTick(currentDateMock, residences);
