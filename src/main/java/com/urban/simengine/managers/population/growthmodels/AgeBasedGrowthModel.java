@@ -5,6 +5,7 @@ import com.urban.simengine.Gender;
 import com.urban.simengine.SkillLevel;
 import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.agents.HumanAgentImpl;
+import com.urban.simengine.managers.population.firstnamegenerators.FirstNameGenerator;
 
 import java.util.*;
 
@@ -24,8 +25,13 @@ public class AgeBasedGrowthModel implements GrowthModel {
 
     private int currentYear;
 
-    private List<HumanAgent> females = new ArrayList<HumanAgent>();
-    private Map<Integer, List<HumanAgent>> femalesByAgeBracket = new HashMap<Integer, List<HumanAgent>>();
+    private Map<HumanAgent, Calendar> recentMothers = new HashMap<HumanAgent, Calendar>();
+
+    private FirstNameGenerator firstNameGenerator;
+
+    public AgeBasedGrowthModel(FirstNameGenerator firstNameGenerator) {
+        this.firstNameGenerator = firstNameGenerator;
+    }
 
     public Set<HumanAgent> performGrowth(Set<HumanAgent> humans, int yearlyBirthRate, Calendar currentDate, int tickLength, int tickLengthUnit) {
         int expectedBirthsForYear = (int) Math.ceil((float) humans.size() * yearlyBirthRate / 10000);
@@ -60,11 +66,12 @@ public class AgeBasedGrowthModel implements GrowthModel {
         Calendar tickEnd = (Calendar) currentDate.clone();
         tickEnd.add(tickLengthUnit, tickLength);
 
-        this.extractElligibleFemales(humans, currentDate);
-        this.prepareAgeBrackets(currentDate);
+        this.updateRecentMothers(currentDate);
+        List<HumanAgent> potentialMothers = this.getPotentialMothers(humans, currentDate);
+        Map<Integer, List<HumanAgent>> potentialMothersByAgeBracket = this.getPotentialMothersByAgeBrackets(potentialMothers, currentDate);
 
         while (!this.birthPlan.isEmpty() && (birthDate = this.birthPlan.get(0)) != null && birthDate.before(tickEnd)) {
-            Family family = this.chooseFamily();
+            Family family = this.chooseFamily(potentialMothersByAgeBracket);
             if (family != null) {
                 newHumans.add(this.doBirth(birthDate, family));
             }
@@ -74,28 +81,43 @@ public class AgeBasedGrowthModel implements GrowthModel {
         return newHumans;
     }
 
-    private void extractElligibleFemales(Set<HumanAgent> humans, Calendar currentDate) {
-        //TODO: implement "rest periods" between babies!
+    private void updateRecentMothers(Calendar currentDate) {
+        Set<HumanAgent> mothersCompletedRestPeriod = new HashSet<HumanAgent>();
+        for (HumanAgent mother : this.recentMothers.keySet()) {
+            if (currentDate.compareTo(this.recentMothers.get(mother)) >= 0) {
+                mothersCompletedRestPeriod.add(mother);
+            }
+        }
+        for (HumanAgent mother : mothersCompletedRestPeriod) {
+            this.recentMothers.remove(mother);
+        }
+    }
+
+    private List<HumanAgent> getPotentialMothers(Set<HumanAgent> humans, Calendar currentDate) {
+        List<HumanAgent> potentialMothers = new ArrayList<HumanAgent>();
         int[][] ageDist = this.getAgeDistribution();
         for (HumanAgent human : humans) {
             Set<HumanAgent> parents = human.getFamily().getParents();
             if (human.getGender() == Gender.FEMALE && parents.contains(human) && parents.size() == 2) {
                 int age = human.getAge(currentDate);
                 if (age >= ageDist[0][0] && age <= ageDist[ageDist.length-1][1]) {
-                    this.females.add(human);
+                    potentialMothers.add(human);
                 }
             }
         }
+        return potentialMothers;
     }
 
-    private void prepareAgeBrackets(Calendar currentDate) {
+    private Map<Integer, List<HumanAgent>> getPotentialMothersByAgeBrackets(List<HumanAgent> potentialMothers, Calendar currentDate) {
+        Map<Integer, List<HumanAgent>> potentialMothersByAgeBracket = new HashMap<Integer, List<HumanAgent>>();
         for (int ageBracketIndex = 0; ageBracketIndex < this.getAgeDistribution().length; ageBracketIndex++) {
-            this.femalesByAgeBracket.put(ageBracketIndex, new ArrayList<HumanAgent>());
+            potentialMothersByAgeBracket.put(ageBracketIndex, new ArrayList<HumanAgent>());
         }
-        for (HumanAgent human : this.females) {
+        for (HumanAgent human : potentialMothers) {
             int ageBracketIndex = this.findAgeBracketIndexForHuman(human, currentDate);
-            this.femalesByAgeBracket.get(ageBracketIndex).add(human);
+            potentialMothersByAgeBracket.get(ageBracketIndex).add(human);
         }
+        return potentialMothersByAgeBracket;
     }
 
     private int findAgeBracketIndexForHuman(HumanAgent human, Calendar currentDate) {
@@ -118,31 +140,46 @@ public class AgeBasedGrowthModel implements GrowthModel {
         return list.get(randomIdx);
     }
 
-    private Family chooseFamily() {
+    private Family chooseFamily(Map<Integer, List<HumanAgent>> potentialMothersByAgeBracket) {
         List<int[]> ageDistribution = new ArrayList<int[]>(Arrays.asList(this.getAgeDistribution()));
         List<HumanAgent> humansByAgeBracket;
 
         do {
             int ageBracketIndex = this.getRandomIndexFromDistribution(ageDistribution.toArray(new int[][] {}), 2);
-            humansByAgeBracket = this.getHumansByAgeBracket(ageDistribution.get(ageBracketIndex));
+            humansByAgeBracket = this.getHumansByAgeBracket(ageDistribution.get(ageBracketIndex), potentialMothersByAgeBracket);
             ageDistribution.remove(ageBracketIndex);
         } while (humansByAgeBracket.isEmpty() && !ageDistribution.isEmpty());
 
-        if (humansByAgeBracket.isEmpty()) {
+        List<HumanAgent> filteredHumansByAgeBracket = new ArrayList<HumanAgent>(humansByAgeBracket);
+        filteredHumansByAgeBracket.removeAll(this.recentMothers.keySet());
+
+        if (filteredHumansByAgeBracket.isEmpty()) {
             return null;
         }
 
-        return this.getRandomItem(humansByAgeBracket).getFamily();
+        return this.getRandomItem(filteredHumansByAgeBracket).getFamily();
     }
 
     private HumanAgent doBirth(Calendar dateOfBirth, Family family) {
         Gender gender = (Math.random() >= 0.5 ? Gender.FEMALE : Gender.MALE);
 
-        //TODO: generate random names
-        String firstName = (gender == Gender.MALE ? "John" : "Joan");
-        String lastName = "Doe";
+        String firstName = this.firstNameGenerator.getName(gender);
 
-        return new HumanAgentImpl(dateOfBirth, gender, firstName, lastName, family.getParents(), null, family, SkillLevel.NONE);
+        HumanAgent mother = null;
+        HumanAgent father = null;
+        for (HumanAgent parent : family.getParents()) {
+            if (parent.getGender() == Gender.MALE) {
+                father = parent;
+            } else {
+                mother = parent;
+            }
+        }
+
+        Calendar restPeriodEndDate = (Calendar) dateOfBirth.clone();
+        restPeriodEndDate.add(Calendar.YEAR, 3);
+        this.recentMothers.put(mother, restPeriodEndDate);
+
+        return new HumanAgentImpl(dateOfBirth, gender, firstName, father.getLastName(), family.getParents(), null, family, SkillLevel.NONE);
     }
 
     private void planBirthsForYear(int expectedBirths, Calendar currentDate) {
@@ -159,11 +196,11 @@ public class AgeBasedGrowthModel implements GrowthModel {
         Collections.sort(this.birthPlan);
     }
 
-    private List<HumanAgent> getHumansByAgeBracket(int[] ageBracket) {
+    private List<HumanAgent> getHumansByAgeBracket(int[] ageBracket, Map<Integer, List<HumanAgent>> potentialMothersByAgeBracket) {
         int[][] ageDistribution = this.getAgeDistribution();
         for (int ageBracketIndex = 0; ageBracketIndex < ageDistribution.length; ageBracketIndex++) {
             if (ageDistribution[ageBracketIndex] == ageBracket) {
-                return this.femalesByAgeBracket.get(ageBracketIndex);
+                return potentialMothersByAgeBracket.get(ageBracketIndex);
             }
         }
         return null;

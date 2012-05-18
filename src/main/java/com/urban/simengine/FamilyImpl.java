@@ -1,8 +1,11 @@
 package com.urban.simengine;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 import com.urban.simengine.agents.HumanAgent;
 import com.urban.simengine.structures.ResidenceStructure;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,23 +26,19 @@ public class FamilyImpl implements Family {
     }
 
     public Set<HumanAgent> getParents() {
-        Set<HumanAgent> parents = new HashSet<HumanAgent>();
-        for (HumanAgent human : this.getMembers()) {
-            if (human.getParents().isEmpty() || !this.getMembers().containsAll(human.getParents())) {
-                parents.add(human);
+        return Collections.unmodifiableSet(Sets.filter(this.members, new Predicate<HumanAgent>() {
+            public boolean apply(HumanAgent human) {
+                return (human.getParents().isEmpty() || !human.getFamily().getMembers().containsAll(human.getParents()));
             }
-        }
-        return parents;
+        }));
     }
 
     public Set<HumanAgent> getChildren() {
-        Set<HumanAgent> children = new HashSet<HumanAgent>();
-        for (HumanAgent human : this.getMembers()) {
-            if (human.getChildren().isEmpty() && this.getMembers().containsAll(human.getParents())) {
-                children.add(human);
+        return Collections.unmodifiableSet(Sets.filter(this.members, new Predicate<HumanAgent>() {
+            public boolean apply(HumanAgent human) {
+                return (human.getChildren().isEmpty() && human.getFamily().getMembers().containsAll(human.getParents()));
             }
-        }
-        return children;
+        }));
     }
 
     public ResidenceStructure getResidence() {

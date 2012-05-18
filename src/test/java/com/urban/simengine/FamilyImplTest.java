@@ -96,19 +96,22 @@ public class FamilyImplTest {
         Set<HumanAgent> childrenSet = new HashSet<HumanAgent>();
         childrenSet.add(childMock1);
 
-        expect(parentMock1.getParents()).andReturn(new HashSet<HumanAgent>()).anyTimes();
-        expect(parentMock1.getChildren()).andReturn(childrenSet).anyTimes();
-        expect(parentMock2.getParents()).andReturn(new HashSet<HumanAgent>()).anyTimes();
-        expect(parentMock2.getChildren()).andReturn(childrenSet).anyTimes();
-        expect(childMock1.getParents()).andReturn(parentsSet).anyTimes();
-        expect(childMock1.getChildren()).andReturn(new HashSet<HumanAgent>()).anyTimes();
-
-        control.replay();
-
         Family family = new FamilyImpl();
         family.getMembers().add(parentMock1);
         family.getMembers().add(parentMock2);
         family.getMembers().add(childMock1);
+
+        expect(parentMock1.getParents()).andReturn(new HashSet<HumanAgent>()).anyTimes();
+        expect(parentMock1.getChildren()).andReturn(childrenSet).anyTimes();
+        expect(parentMock1.getFamily()).andReturn(family).anyTimes();
+        expect(parentMock2.getParents()).andReturn(new HashSet<HumanAgent>()).anyTimes();
+        expect(parentMock2.getChildren()).andReturn(childrenSet).anyTimes();
+        expect(parentMock2.getFamily()).andReturn(family).anyTimes();
+        expect(childMock1.getParents()).andReturn(parentsSet).anyTimes();
+        expect(childMock1.getChildren()).andReturn(new HashSet<HumanAgent>()).anyTimes();
+        expect(childMock1.getFamily()).andReturn(family).anyTimes();
+
+        control.replay();
 
         Set<HumanAgent> actualParents = family.getParents();
         Set<HumanAgent> actualChildren = family.getChildren();
